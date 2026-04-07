@@ -3,62 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Отчет кухни</title>
+<title>Отчет смены</title>
 
 <style>
 body {
-  font-family: -apple-system, sans-serif;
-  background: linear-gradient(180deg,#0f172a,#020617);
-  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background:#f5f5f7;
   margin:0;
-  padding:20px;
+  padding:0;
   display:flex;
   justify-content:center;
 }
 
-.box {
+.container {
   width:100%;
   max-width:420px;
+  padding:20px;
+}
+
+h1 {
+  text-align:center;
+  font-size:22px;
+  margin-bottom:20px;
 }
 
 .card {
-  background: rgba(30,41,59,0.6);
-  backdrop-filter: blur(10px);
-  border-radius:18px;
-  padding:18px;
-  margin-top:15px;
-  border:1px solid rgba(255,255,255,0.05);
+  background:white;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-h2 { text-align:center; }
-h3 { font-size:15px; color:#94a3b8; }
+.label {
+  font-size:14px;
+  color:#6b7280;
+  margin-bottom:6px;
+}
 
 input, select, textarea {
   width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:1px solid #334155;
-  background:#0f172a;
-  color:white;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #e5e7eb;
   font-size:15px;
+  background:#fafafa;
+}
+
+textarea {
+  min-height:80px;
 }
 
 button {
   width:100%;
-  padding:16px;
-  border-radius:16px;
+  padding:14px;
   border:none;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  border-radius:14px;
+  background:#111827;
   color:white;
-  font-size:17px;
-  margin-top:15px;
+  font-size:16px;
+  margin-top:10px;
+}
+
+button:active {
+  opacity:0.9;
 }
 
 .small-btn {
-  width:auto;
-  padding:6px 10px;
   font-size:12px;
-  background:#1e293b;
+  padding:6px 10px;
+  background:#f3f4f6;
+  color:#111;
+  border-radius:10px;
+  border:none;
 }
 
 .row {
@@ -67,58 +84,63 @@ button {
   align-items:center;
 }
 
+/* TAGS */
 .tag {
   display:inline-block;
-  padding:8px 12px;
+  padding:6px 10px;
   margin:4px;
-  background:#1e293b;
+  background:#f3f4f6;
   border-radius:10px;
   font-size:13px;
 }
 
 .tag.active {
-  background:#22c55e;
+  background:#111827;
+  color:white;
 }
 
 #tags {
-  max-height:0;
-  overflow:hidden;
-  transition:0.3s;
-}
-
-#tags.show {
-  max-height:300px;
+  display:none;
+  margin-top:10px;
 }
 
 /* PIN */
+.pin-dots {
+  display:flex;
+  justify-content:center;
+  margin:20px 0;
+}
+
 .dot {
-  width:12px;
-  height:12px;
+  width:10px;
+  height:10px;
   border-radius:50%;
-  border:2px solid #64748b;
+  border:1px solid #ccc;
   margin:6px;
 }
 
 .dot.active {
-  background:#22c55e;
-  border:none;
+  background:#111;
 }
 
-#pinPad {
+.pin-pad {
   display:grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
 
-.pinBtn {
-  padding:20px;
-  background:#1e293b;
-  border-radius:16px;
+.pin-btn {
+  padding:18px;
+  background:white;
+  border-radius:14px;
   text-align:center;
-  font-size:20px;
+  font-size:18px;
+  border:1px solid #e5e7eb;
 }
 
-.hidden { display:none; }
+.hidden {
+  display:none;
+}
 
 .success {
   text-align:center;
@@ -129,43 +151,43 @@ button {
 
 <body>
 
-<div class="box">
+<div class="container">
 
 <!-- USER -->
-<div id="screenUsers">
-<h2>Кто менеджер?</h2>
+<div id="users">
+<h1>Кто менеджер</h1>
 <button onclick="selectUser('Егор')">Егор</button>
 <button onclick="selectUser('Стас')">Стас</button>
 </div>
 
 <!-- PIN -->
-<div id="screenPin" class="hidden">
-<h2 id="pinTitle"></h2>
+<div id="pinScreen" class="hidden">
+<h1 id="pinTitle"></h1>
 
-<div id="pinDots" style="display:flex;justify-content:center;">
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
+<div class="pin-dots">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
 </div>
 
-<div id="pinPad"></div>
+<div class="pin-pad" id="pinPad"></div>
 
 <p id="pinError" style="color:red;text-align:center;"></p>
 </div>
 
 <!-- FORM -->
-<div id="screenForm" class="hidden">
+<div id="form" class="hidden">
 
-<h2>Отчет смены</h2>
+<h1>Отчет смены</h1>
 
 <div class="card">
-<h3>Дата</h3>
+<div class="label">Дата</div>
 <input type="date" id="date">
 </div>
 
 <div class="card">
-<h3>Смена</h3>
+<div class="label">Смена</div>
 <select id="shift">
 <option>Утро</option>
 <option>Вечер</option>
@@ -173,50 +195,51 @@ button {
 </div>
 
 <div class="card">
-<h3>Готовность</h3>
+<div class="label">Готовность кухни</div>
 <select id="ready" onchange="toggleLow()">
 <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
 </select>
 
 <div id="lowBlock" class="hidden">
-<textarea id="lowComment" placeholder="Почему не готово"></textarea>
-<input type="file" id="photoReady" accept="image/*" capture="environment">
+<textarea id="lowComment" placeholder="Причина"></textarea>
+<input type="file" id="photoReady">
 </div>
 </div>
 
 <div class="card">
 <div class="row">
-<h3>Как прошла смена</h3>
+<div class="label">Как прошла смена</div>
 <button class="small-btn" onclick="toggleTags()">Подсказки</button>
 </div>
 
-<textarea id="summary" placeholder="Опиши смену"></textarea>
+<textarea id="summary"></textarea>
+
 <div id="tags"></div>
 </div>
 
 <div class="card">
-<h3>Команда</h3>
+<div class="label">Команда</div>
 
 <select id="hot">
-<option value="">— Горячая</option>
+<option value="">Горячая</option>
 <option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 
 <select id="cold">
-<option value="">— Холодная</option>
+<option value="">Холодная</option>
 <option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 
 <select id="control">
-<option value="">— Проверка</option>
+<option value="">Проверка</option>
 <option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 </div>
 
 <div class="card">
-<h3>Проблемы</h3>
+<div class="label">Проблемы</div>
 <textarea id="problem"></textarea>
-<input type="file" id="photoProblem" accept="image/*" capture="environment">
+<input type="file" id="photoProblem">
 </div>
 
 <button onclick="send()">Отправить</button>
@@ -224,8 +247,8 @@ button {
 </div>
 
 <!-- DONE -->
-<div id="screenDone" class="hidden success">
-<h2>Отчет отправлен ✅</h2>
+<div id="done" class="hidden success">
+<h1>Готово ✅</h1>
 <button onclick="location.reload()">Новый отчет</button>
 </div>
 
@@ -233,38 +256,38 @@ button {
 
 <script>
 
-let currentUser = "";
+let user = "";
 let pin = "";
 
 // USER
 function selectUser(name){
-  currentUser = name;
+  user = name;
   pin = "";
   updateDots();
 
   hideAll();
-  show("screenPin");
+  show("pinScreen");
   document.getElementById("pinTitle").innerText = name;
 }
 
-// PIN PAD
+// PIN
 const pad = document.getElementById("pinPad");
 
 [1,2,3,4,5,6,7,8,9,"←",0].forEach(n=>{
   const b = document.createElement("div");
-  b.className = "pinBtn";
-  b.innerText = n;
+  b.className="pin-btn";
+  b.innerText=n;
 
-  b.onclick = ()=>{
+  b.onclick=()=>{
     if(n==="←"){
-      pin = pin.slice(0,-1);
-    } else if(pin.length < 4){
-      pin += n;
+      pin=pin.slice(0,-1);
+    } else if(pin.length<4){
+      pin+=n;
     }
 
     updateDots();
 
-    if(pin.length === 4){
+    if(pin.length===4){
       login(pin);
     }
   };
@@ -274,21 +297,21 @@ const pad = document.getElementById("pinPad");
 
 function updateDots(){
   document.querySelectorAll(".dot").forEach((d,i)=>{
-    d.classList.toggle("active", i < pin.length);
+    d.classList.toggle("active", i<pin.length);
   });
 }
 
 // LOGIN
 function login(p){
-  const saved = localStorage.getItem("pin_"+currentUser);
+  const saved=localStorage.getItem("pin_"+user);
 
   if(!saved){
-    localStorage.setItem("pin_"+currentUser, p);
+    localStorage.setItem("pin_"+user,p);
     enter();
-  } else if(saved === p){
+  } else if(saved===p){
     enter();
   } else {
-    document.getElementById("pinError").innerText = "Неверный PIN";
+    document.getElementById("pinError").innerText="Неверный PIN";
     pin="";
     updateDots();
   }
@@ -296,93 +319,78 @@ function login(p){
 
 function enter(){
   hideAll();
-  show("screenForm");
-
-  // авто дата сегодня
-  document.getElementById("date").valueAsDate = new Date();
+  show("form");
+  document.getElementById("date").valueAsDate=new Date();
 }
 
-// READY
+// LOW READY
 function toggleLow(){
-  const val = document.getElementById("ready").value;
-  document.getElementById("lowBlock").classList.toggle("hidden", val >= 4);
+  const val=document.getElementById("ready").value;
+  document.getElementById("lowBlock").classList.toggle("hidden", val>=4);
 }
 
 // TAGS
 function toggleTags(){
-  document.getElementById("tags").classList.toggle("show");
+  const t=document.getElementById("tags");
+  t.style.display = t.style.display==="block" ? "none" : "block";
 }
 
-const phrases = [
-"Большая нагрузка","Нехватка персонала","Смена прошла спокойно",
-"Были задержки","Высокий поток заказов","Ошибки в заказах",
-"Проблемы с поставками","Очереди","Долгая отдача","Все шло идеально"
+const phrases=[
+"Большая нагрузка","Нехватка персонала","Смена спокойная",
+"Были задержки","Высокий поток заказов","Ошибки",
+"Проблемы с поставками","Очереди","Все прошло отлично"
 ];
 
-const tagsDiv = document.getElementById("tags");
+const tagsDiv=document.getElementById("tags");
 
 phrases.forEach(p=>{
-  const el = document.createElement("div");
-  el.innerText = p;
-  el.className = "tag";
+  const el=document.createElement("div");
+  el.className="tag";
+  el.innerText=p;
 
-  el.onclick = ()=>{
-    const t = document.getElementById("summary");
+  el.onclick=()=>{
     el.classList.toggle("active");
 
+    const t=document.getElementById("summary");
+
     if(el.classList.contains("active")){
-      t.value += (t.value ? ", " : "") + p;
+      t.value+=(t.value?", ":"")+p;
     } else {
-      t.value = t.value.replace(p+", ","").replace(p,"");
+      t.value=t.value.replace(p,"");
     }
   };
 
   tagsDiv.appendChild(el);
 });
 
-// BASE64
-function toBase64(file){
-  return new Promise(res=>{
-    const r = new FileReader();
-    r.onload = ()=>res(r.result.split(',')[1]);
-    r.readAsDataURL(file);
-  });
-}
-
 // SEND
 async function send(){
 
-  const data = {
-    pin: currentUser,
-    date: document.getElementById("date").value,
-    shift: document.getElementById("shift").value,
-    ready: document.getElementById("ready").value,
-    lowComment: document.getElementById("lowComment").value,
-    summary: document.getElementById("summary").value,
-    hot: document.getElementById("hot").value,
-    cold: document.getElementById("cold").value,
-    control: document.getElementById("control").value,
-    problem: document.getElementById("problem").value
+  const data={
+    user,
+    date:document.getElementById("date").value,
+    shift:document.getElementById("shift").value,
+    ready:document.getElementById("ready").value,
+    lowComment:document.getElementById("lowComment").value,
+    summary:document.getElementById("summary").value,
+    hot:document.getElementById("hot").value,
+    cold:document.getElementById("cold").value,
+    control:document.getElementById("control").value,
+    problem:document.getElementById("problem").value
   };
-
-  const f1 = document.getElementById("photoReady").files[0];
-  if(f1) data.imageReady = await toBase64(f1);
-
-  const f2 = document.getElementById("photoProblem").files[0];
-  if(f2) data.imageProblem = await toBase64(f2);
 
   await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
     method:"POST",
-    body: JSON.stringify(data)
+    body:JSON.stringify(data)
   });
 
   hideAll();
-  show("screenDone");
+  show("done");
 }
 
 // HELPERS
 function hideAll(){
-  document.querySelectorAll(".box > div").forEach(d=>d.classList.add("hidden"));
+  document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
 }
 
 function show(id){
