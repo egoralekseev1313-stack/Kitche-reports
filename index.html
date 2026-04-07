@@ -1,37 +1,95 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Отчет кухни</title>
 
 <style>
-body { font-family: Arial; background:#0f172a; color:white; padding:20px;}
-.box { max-width:400px; margin:auto;}
-
-input, select, textarea {
-  width:100%; padding:10px; margin-top:10px; border-radius:8px;
+body {
+  font-family: -apple-system, Arial;
+  background:#0f172a;
+  color:white;
+  margin:0;
+  padding:20px;
+  display:flex;
+  justify-content:center;
 }
 
+.box {
+  width:100%;
+  max-width:420px;
+  animation:fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1;}
+}
+
+h2 { text-align:center; }
+
 button {
-  width:100%; padding:12px; margin-top:10px;
-  border-radius:10px;
+  width:100%;
+  padding:16px;
+  margin:10px 0;
+  border-radius:14px;
+  font-size:18px;
+  border:none;
+  background:#1f2937;
+  color:white;
+  transition:0.2s;
+}
+
+button:active {
+  transform:scale(0.96);
+}
+
+input, select, textarea {
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
 }
 
 .hidden { display:none; }
 
+.card {
+  background:#1e293b;
+  padding:15px;
+  border-radius:16px;
+  margin-top:15px;
+}
+
 .tag {
   display:inline-block;
-  padding:8px;
+  padding:10px 14px;
   margin:5px;
   background:#334155;
-  border-radius:8px;
-  cursor:pointer;
+  border-radius:12px;
+  font-size:14px;
+  transition:0.2s;
 }
 
 .tag.active {
   background:#22c55e;
+}
+
+#tags {
+  max-height:0;
+  overflow:hidden;
+  transition:0.3s;
+}
+
+#tags.show {
+  max-height:300px;
+}
+
+.success {
+  text-align:center;
+  margin-top:100px;
 }
 </style>
 </head>
@@ -40,21 +98,21 @@ button {
 
 <div class="box">
 
-<!-- ВЫБОР МЕНЕДЖЕРА -->
+<!-- USER -->
 <div id="screenUsers">
-<h2>Выбери менеджера</h2>
-<button onclick="selectUser('Егор')">Егор</button>
-<button onclick="selectUser('Стас')">Стас</button>
+<h2>Кто менеджер?</h2>
+<button onclick="selectUser('Егор')">👤 Егор</button>
+<button onclick="selectUser('Стас')">👤 Стас</button>
 </div>
 
-<!-- СОЗДАНИЕ PIN -->
+<!-- PIN CREATE -->
 <div id="screenCreate" class="hidden">
 <h2 id="createName"></h2>
-<input id="createPin" placeholder="Создай PIN (4 цифры)" maxlength="4">
+<input id="createPin" placeholder="Создай PIN" maxlength="4">
 <button onclick="savePin()">Сохранить</button>
 </div>
 
-<!-- ВХОД -->
+<!-- LOGIN -->
 <div id="screenLogin" class="hidden">
 <h2 id="loginName"></h2>
 <input id="loginPin" placeholder="Введите PIN" maxlength="4">
@@ -62,78 +120,76 @@ button {
 <p id="error" style="color:red;"></p>
 </div>
 
-<!-- ФОРМА -->
+<!-- FORM -->
 <div id="screenForm" class="hidden">
 
 <h2>Отчет смены</h2>
 
+<div class="card">
 <select id="shift">
 <option>Утро</option>
 <option>Вечер</option>
 </select>
-
-<h3>Готовность кухни</h3>
-<select id="ready" onchange="toggleLow()">
-<option>5</option>
-<option>4</option>
-<option>3</option>
-<option>2</option>
-<option>1</option>
-</select>
-
-<div id="lowBlock" style="display:none;">
-<textarea id="lowComment" placeholder="Почему не готово"></textarea>
-<input type="file" id="photoReady">
 </div>
 
-<h3>Как прошла смена</h3>
-<div id="tags"></div>
-<textarea id="summary"></textarea>
+<div class="card">
+<h3>Готовность</h3>
+<select id="ready" onchange="toggleLow()">
+<option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+</select>
 
-<h3>Позиции</h3>
+<div id="lowBlock" class="hidden">
+<textarea id="lowComment" placeholder="Почему не готово"></textarea>
+<input type="file" id="photoReady" accept="image/*" capture="environment">
+</div>
+</div>
+
+<div class="card">
+<h3>Как прошла смена</h3>
+
+<textarea id="summary" placeholder="Опиши смену"></textarea>
+
+<button onclick="toggleTags()">Подсказки ▼</button>
+
+<div id="tags"></div>
+</div>
+
+<div class="card">
+<h3>Команда</h3>
 
 <label>🔥 Горячая</label>
 <select id="hot">
 <option value="">—</option>
-<option>Егор</option>
-<option>Стас</option>
-<option>Яков</option>
-<option>Алекс</option>
-<option>Денис</option>
+<option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 
 <label>🥗 Холодная</label>
 <select id="cold">
 <option value="">—</option>
-<option>Егор</option>
-<option>Стас</option>
-<option>Яков</option>
-<option>Алекс</option>
-<option>Денис</option>
+<option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 
 <label>👀 Проверка</label>
 <select id="control">
 <option value="">—</option>
-<option>Егор</option>
-<option>Стас</option>
-<option>Яков</option>
-<option>Алекс</option>
-<option>Денис</option>
+<option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
+</div>
 
+<div class="card">
 <h3>Проблемы</h3>
-<textarea id="problem"></textarea>
-<input type="file" id="photoProblem">
+<textarea id="problem" placeholder="Опиши проблему"></textarea>
+<input type="file" id="photoProblem" accept="image/*" capture="environment">
+</div>
 
 <button onclick="send()">Отправить</button>
 
 </div>
 
-<!-- ЭКРАН УСПЕХА -->
-<div id="screenDone" class="hidden">
-<h2 style="text-align:center;">✅ Отчет отправлен</h2>
-<p style="text-align:center;">Спасибо 🙌</p>
+<!-- DONE -->
+<div id="screenDone" class="hidden success">
+<h2>✅ Отчет отправлен</h2>
+<p>Спасибо 🙌</p>
 <button onclick="location.reload()">Новый отчет</button>
 </div>
 
@@ -143,71 +199,68 @@ button {
 
 let currentUser = "";
 
-// выбор пользователя
+// USER
 function selectUser(name){
   currentUser = name;
+  const saved = localStorage.getItem("pin_"+name);
 
-  const savedPin = localStorage.getItem("pin_" + name);
+  hideAll();
 
-  document.getElementById("screenUsers").classList.add("hidden");
-
-  if(savedPin){
-    document.getElementById("screenLogin").classList.remove("hidden");
+  if(saved){
+    show("screenLogin");
     document.getElementById("loginName").innerText = name;
   } else {
-    document.getElementById("screenCreate").classList.remove("hidden");
+    show("screenCreate");
     document.getElementById("createName").innerText = name;
   }
 }
 
-// создать PIN
+// PIN
 function savePin(){
-  let pin = document.getElementById("createPin").value.replace(/\D/g,"");
+  const pin = document.getElementById("createPin").value;
 
   if(pin.length !== 4){
-    alert("PIN должен быть 4 цифры");
+    alert("4 цифры");
     return;
   }
 
-  localStorage.setItem("pin_" + currentUser, pin);
-
-  document.getElementById("screenCreate").classList.add("hidden");
-  document.getElementById("screenLogin").classList.remove("hidden");
+  localStorage.setItem("pin_"+currentUser, pin);
+  hideAll();
+  show("screenLogin");
 }
 
-// вход
+// LOGIN
 function login(){
-  const saved = localStorage.getItem("pin_" + currentUser);
+  const saved = localStorage.getItem("pin_"+currentUser);
   const input = document.getElementById("loginPin").value;
 
   if(saved == input){
-    document.getElementById("screenLogin").classList.add("hidden");
-    document.getElementById("screenForm").classList.remove("hidden");
+    hideAll();
+    show("screenForm");
   } else {
     document.getElementById("error").innerText = "Неверный PIN";
   }
 }
 
-// готовность
+// READY
 function toggleLow(){
   const val = document.getElementById("ready").value;
-  document.getElementById("lowBlock").style.display = val < 4 ? "block" : "none";
+  document.getElementById("lowBlock").classList.toggle("hidden", val >= 4);
 }
 
-// подсказки
+// TAGS
+let tagsVisible = false;
+
+function toggleTags(){
+  const el = document.getElementById("tags");
+  tagsVisible = !tagsVisible;
+  el.classList.toggle("show", tagsVisible);
+}
+
 const phrases = [
-"Большая нагрузка","Очень высокая нагрузка","Нехватка персонала","Смена прошла спокойно",
-"Были задержки","Высокий поток заказов","Ошибки в заказах","Проблемы с поставками",
-"Кухня работала слаженно","Сильная загрузка в пик","Мало заказов","Были возвраты",
-"Долгое ожидание клиентов","Перегружена горячая линия","Проблемы на холодной стороне",
-"Недостаток заготовок","Не хватало продуктов","Работа шла стабильно",
-"Были технические сбои","Смена прошла отлично","Средняя загрузка",
-"Пиковая нагрузка вечером","Пиковая нагрузка утром","Слабая организация",
-"Проблемы с коммуникацией","Команда работала хорошо","Низкая скорость отдачи",
-"Были ошибки сборки","Проблемы с качеством","Все прошло без проблем",
-"Работа была напряженной","Были мелкие задержки","Сильная команда",
-"Нехватка опыта у сотрудников","Работа шла быстро","Были накладки",
-"Сложная смена","Легкая смена","Смена прошла эффективно"
+"Большая нагрузка","Нехватка персонала","Смена прошла спокойно",
+"Были задержки","Высокий поток заказов","Ошибки в заказах",
+"Проблемы с поставками","Очереди","Долгая отдача","Все шло идеально"
 ];
 
 const tagsDiv = document.getElementById("tags");
@@ -218,40 +271,31 @@ phrases.forEach(p=>{
   el.className = "tag";
 
   el.onclick = ()=>{
-    const textarea = document.getElementById("summary");
+    const t = document.getElementById("summary");
 
     el.classList.toggle("active");
 
     if(el.classList.contains("active")){
-      textarea.value += (textarea.value ? ", " : "") + p;
+      t.value += (t.value ? ", " : "") + p;
     } else {
-      textarea.value = textarea.value.replace(p + ", ", "").replace(p, "");
+      t.value = t.value.replace(p+", ","").replace(p,"");
     }
   };
 
   tagsDiv.appendChild(el);
 });
 
-// base64
+// BASE64
 function toBase64(file){
   return new Promise(res=>{
-    const reader = new FileReader();
-    reader.onload = () => res(reader.result.split(',')[1]);
-    reader.readAsDataURL(file);
+    const r = new FileReader();
+    r.onload = ()=>res(r.result.split(',')[1]);
+    r.readAsDataURL(file);
   });
 }
 
-// отправка
+// SEND
 async function send(){
-
-  let imgReady = "";
-  let imgProblem = "";
-
-  const f1 = document.getElementById("photoReady").files[0];
-  if(f1) imgReady = await toBase64(f1);
-
-  const f2 = document.getElementById("photoProblem").files[0];
-  if(f2) imgProblem = await toBase64(f2);
 
   const data = {
     pin: currentUser,
@@ -262,18 +306,31 @@ async function send(){
     hot: document.getElementById("hot").value,
     cold: document.getElementById("cold").value,
     control: document.getElementById("control").value,
-    problem: document.getElementById("problem").value,
-    imageReady: imgReady,
-    imageProblem: imgProblem
+    problem: document.getElementById("problem").value
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbw79n9IAlWZlU2o687VxjIuHys3a8pPEjwZEu69KixFir4W8OxCy4OZGsIUaw8GFkxh/exec", {
+  const f1 = document.getElementById("photoReady").files[0];
+  if(f1) data.imageReady = await toBase64(f1);
+
+  const f2 = document.getElementById("photoProblem").files[0];
+  if(f2) data.imageProblem = await toBase64(f2);
+
+  await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
     method:"POST",
     body: JSON.stringify(data)
-  }).then(()=>{
-    document.getElementById("screenForm").classList.add("hidden");
-    document.getElementById("screenDone").classList.remove("hidden");
   });
+
+  hideAll();
+  show("screenDone");
+}
+
+// HELPERS
+function hideAll(){
+  document.querySelectorAll(".box > div").forEach(d=>d.classList.add("hidden"));
+}
+
+function show(id){
+  document.getElementById(id).classList.remove("hidden");
 }
 
 </script>
