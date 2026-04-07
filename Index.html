@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta charset="UTF-8">
+<title>Отчет кухни</title>
+
+<style>
+body { font-family: Arial; background:#0f172a; color:white; padding:20px;}
+.box { max-width:400px; margin:auto;}
+
+input, select, textarea {
+  width:100%; padding:10px; margin-top:10px; border-radius:8px;
+}
+
+button {
+  width:100%; padding:12px; margin-top:10px;
+  border-radius:10px;
+}
+
+.hidden { display:none; }
+
+.tag {
+  display:inline-block;
+  padding:8px;
+  margin:5px;
+  background:#334155;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.tag.active {
+  background:#22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<!-- ВЫБОР МЕНЕДЖЕРА -->
+<div id="screenUsers">
+<h2>Выбери менеджера</h2>
+<button onclick="selectUser('Егор')">Егор</button>
+<button onclick="selectUser('Стас')">Стас</button>
+</div>
+
+<!-- СОЗДАНИЕ PIN -->
+<div id="screenCreate" class="hidden">
+<h2 id="createName"></h2>
+<input id="createPin" placeholder="Создай PIN (4 цифры)" maxlength="4">
+<button onclick="savePin()">Сохранить</button>
+</div>
+
+<!-- ВХОД -->
+<div id="screenLogin" class="hidden">
+<h2 id="loginName"></h2>
+<input id="loginPin" placeholder="Введите PIN" maxlength="4">
+<button onclick="login()">Войти</button>
+<p id="error" style="color:red;"></p>
+</div>
+
+<!-- ФОРМА -->
+<div id="screenForm" class="hidden">
+
+<h2>Отчет смены</h2>
+
+<select id="shift">
+<option>Утро</option>
+<option>Вечер</option>
+</select>
+
+<h3>Готовность кухни</h3>
+<select id="ready" onchange="toggleLow()">
+<option>5</option>
+<option>4</option>
+<option>3</option>
+<option>2</option>
+<option>1</option>
+</select>
+
+<div id="lowBlock" style="display:none;">
+<textarea id="lowComment" placeholder="Почему не готово"></textarea>
+<input type="file" id="photoReady">
+</div>
+
+<h3>Как прошла смена</h3>
+<div id="tags"></div>
+<textarea id="summary"></textarea>
+
+<h3>Позиции</h3>
+
+<label>🔥 Горячая</label>
+<select id="hot">
+<option value="">—</option>
+<option>Егор</option>
+<option>Стас</option>
+<option>Яков</option>
+<option>Алекс</option>
+<option>Денис</option>
+</select>
+
+<label>🥗 Холодная</label>
+<select id="cold">
+<option value="">—</option>
+<option>Егор</option>
+<option>Стас</option>
+<option>Яков</option>
+<option>Алекс</option>
+<option>Денис</option>
+</select>
+
+<label>👀 Проверка</label>
+<select id="control">
+<option value="">—</option>
+<option>Егор</option>
+<option>Стас</option>
+<option>Яков</option>
+<option>Алекс</option>
+<option>Денис</option>
+</select>
+
+<h3>Проблемы</h3>
+<textarea id="problem"></textarea>
+<input type="file" id="photoProblem">
+
+<button onclick="send()">Отправить</button>
+
+</div>
+
+<!-- ЭКРАН УСПЕХА -->
+<div id="screenDone" class="hidden">
+<h2 style="text-align:center;">✅ Отчет отправлен</h2>
+<p style="text-align:center;">Спасибо 🙌</p>
+<button onclick="location.reload()">Новый отчет</button>
+</div>
+
+</div>
+
+<script>
+
+let currentUser = "";
+
+// выбор пользователя
+function selectUser(name){
+  currentUser = name;
+
+  const savedPin = localStorage.getItem("pin_" + name);
+
+  document.getElementById("screenUsers").classList.add("hidden");
+
+  if(savedPin){
+    document.getElementById("screenLogin").classList.remove("hidden");
+    document.getElementById("loginName").innerText = name;
+  } else {
+    document.getElementById("screenCreate").classList.remove("hidden");
+    document.getElementById("createName").innerText = name;
+  }
+}
+
+// создать PIN
+function savePin(){
+  let pin = document.getElementById("createPin").value.replace(/\D/g,"");
+
+  if(pin.length !== 4){
+    alert("PIN должен быть 4 цифры");
+    return;
+  }
+
+  localStorage.setItem("pin_" + currentUser, pin);
+
+  document.getElementById("screenCreate").classList.add("hidden");
+  document.getElementById("screenLogin").classList.remove("hidden");
+}
+
+// вход
+function login(){
+  const saved = localStorage.getItem("pin_" + currentUser);
+  const input = document.getElementById("loginPin").value;
+
+  if(saved == input){
+    document.getElementById("screenLogin").classList.add("hidden");
+    document.getElementById("screenForm").classList.remove("hidden");
+  } else {
+    document.getElementById("error").innerText = "Неверный PIN";
+  }
+}
+
+// готовность
+function toggleLow(){
+  const val = document.getElementById("ready").value;
+  document.getElementById("lowBlock").style.display = val < 4 ? "block" : "none";
+}
+
+// подсказки
+const phrases = [
+"Большая нагрузка","Очень высокая нагрузка","Нехватка персонала","Смена прошла спокойно",
+"Были задержки","Высокий поток заказов","Ошибки в заказах","Проблемы с поставками",
+"Кухня работала слаженно","Сильная загрузка в пик","Мало заказов","Были возвраты",
+"Долгое ожидание клиентов","Перегружена горячая линия","Проблемы на холодной стороне",
+"Недостаток заготовок","Не хватало продуктов","Работа шла стабильно",
+"Были технические сбои","Смена прошла отлично","Средняя загрузка",
+"Пиковая нагрузка вечером","Пиковая нагрузка утром","Слабая организация",
+"Проблемы с коммуникацией","Команда работала хорошо","Низкая скорость отдачи",
+"Были ошибки сборки","Проблемы с качеством","Все прошло без проблем",
+"Работа была напряженной","Были мелкие задержки","Сильная команда",
+"Нехватка опыта у сотрудников","Работа шла быстро","Были накладки",
+"Сложная смена","Легкая смена","Смена прошла эффективно"
+];
+
+const tagsDiv = document.getElementById("tags");
+
+phrases.forEach(p=>{
+  const el = document.createElement("div");
+  el.innerText = p;
+  el.className = "tag";
+
+  el.onclick = ()=>{
+    const textarea = document.getElementById("summary");
+
+    el.classList.toggle("active");
+
+    if(el.classList.contains("active")){
+      textarea.value += (textarea.value ? ", " : "") + p;
+    } else {
+      textarea.value = textarea.value.replace(p + ", ", "").replace(p, "");
+    }
+  };
+
+  tagsDiv.appendChild(el);
+});
+
+// base64
+function toBase64(file){
+  return new Promise(res=>{
+    const reader = new FileReader();
+    reader.onload = () => res(reader.result.split(',')[1]);
+    reader.readAsDataURL(file);
+  });
+}
+
+// отправка
+async function send(){
+
+  let imgReady = "";
+  let imgProblem = "";
+
+  const f1 = document.getElementById("photoReady").files[0];
+  if(f1) imgReady = await toBase64(f1);
+
+  const f2 = document.getElementById("photoProblem").files[0];
+  if(f2) imgProblem = await toBase64(f2);
+
+  const data = {
+    pin: currentUser,
+    shift: document.getElementById("shift").value,
+    ready: document.getElementById("ready").value,
+    lowComment: document.getElementById("lowComment").value,
+    summary: document.getElementById("summary").value,
+    hot: document.getElementById("hot").value,
+    cold: document.getElementById("cold").value,
+    control: document.getElementById("control").value,
+    problem: document.getElementById("problem").value,
+    imageReady: imgReady,
+    imageProblem: imgProblem
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbw79n9IAlWZlU2o687VxjIuHys3a8pPEjwZEu69KixFir4W8OxCy4OZGsIUaw8GFkxh/exec", {
+    method:"POST",
+    body: JSON.stringify(data)
+  }).then(()=>{
+    document.getElementById("screenForm").classList.add("hidden");
+    document.getElementById("screenDone").classList.remove("hidden");
+  });
+}
+
+</script>
+
+</body>
+</html>
