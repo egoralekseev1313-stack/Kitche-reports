@@ -7,9 +7,9 @@
 
 <style>
 body {
-  font-family: -apple-system, Arial;
-  background:#0f172a;
-  color:white;
+  font-family: -apple-system, sans-serif;
+  background: linear-gradient(180deg,#0f172a,#020617);
+  color: #e2e8f0;
   margin:0;
   padding:20px;
   display:flex;
@@ -19,58 +19,61 @@ body {
 .box {
   width:100%;
   max-width:420px;
-  animation:fadeIn 0.4s ease;
 }
 
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(10px);}
-  to {opacity:1;}
+.card {
+  background: rgba(30,41,59,0.6);
+  backdrop-filter: blur(10px);
+  border-radius:18px;
+  padding:18px;
+  margin-top:15px;
+  border:1px solid rgba(255,255,255,0.05);
 }
 
 h2 { text-align:center; }
-
-button {
-  width:100%;
-  padding:16px;
-  margin:10px 0;
-  border-radius:14px;
-  font-size:18px;
-  border:none;
-  background:#1f2937;
-  color:white;
-  transition:0.2s;
-}
-
-button:active {
-  transform:scale(0.96);
-}
+h3 { font-size:15px; color:#94a3b8; }
 
 input, select, textarea {
   width:100%;
   padding:14px;
-  margin-top:10px;
-  border-radius:12px;
-  border:none;
-  font-size:16px;
+  border-radius:14px;
+  border:1px solid #334155;
+  background:#0f172a;
+  color:white;
+  font-size:15px;
 }
 
-.hidden { display:none; }
-
-.card {
-  background:#1e293b;
-  padding:15px;
+button {
+  width:100%;
+  padding:16px;
   border-radius:16px;
+  border:none;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
+  font-size:17px;
   margin-top:15px;
+}
+
+.small-btn {
+  width:auto;
+  padding:6px 10px;
+  font-size:12px;
+  background:#1e293b;
+}
+
+.row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
 .tag {
   display:inline-block;
-  padding:10px 14px;
-  margin:5px;
-  background:#334155;
-  border-radius:12px;
-  font-size:14px;
-  transition:0.2s;
+  padding:8px 12px;
+  margin:4px;
+  background:#1e293b;
+  border-radius:10px;
+  font-size:13px;
 }
 
 .tag.active {
@@ -87,6 +90,36 @@ input, select, textarea {
   max-height:300px;
 }
 
+/* PIN */
+.dot {
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  border:2px solid #64748b;
+  margin:6px;
+}
+
+.dot.active {
+  background:#22c55e;
+  border:none;
+}
+
+#pinPad {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:10px;
+}
+
+.pinBtn {
+  padding:20px;
+  background:#1e293b;
+  border-radius:16px;
+  text-align:center;
+  font-size:20px;
+}
+
+.hidden { display:none; }
+
 .success {
   text-align:center;
   margin-top:100px;
@@ -101,23 +134,24 @@ input, select, textarea {
 <!-- USER -->
 <div id="screenUsers">
 <h2>Кто менеджер?</h2>
-<button onclick="selectUser('Егор')">👤 Егор</button>
-<button onclick="selectUser('Стас')">👤 Стас</button>
+<button onclick="selectUser('Егор')">Егор</button>
+<button onclick="selectUser('Стас')">Стас</button>
 </div>
 
-<!-- PIN CREATE -->
-<div id="screenCreate" class="hidden">
-<h2 id="createName"></h2>
-<input id="createPin" placeholder="Создай PIN" maxlength="4">
-<button onclick="savePin()">Сохранить</button>
+<!-- PIN -->
+<div id="screenPin" class="hidden">
+<h2 id="pinTitle"></h2>
+
+<div id="pinDots" style="display:flex;justify-content:center;">
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
 </div>
 
-<!-- LOGIN -->
-<div id="screenLogin" class="hidden">
-<h2 id="loginName"></h2>
-<input id="loginPin" placeholder="Введите PIN" maxlength="4">
-<button onclick="login()">Войти</button>
-<p id="error" style="color:red;"></p>
+<div id="pinPad"></div>
+
+<p id="pinError" style="color:red;text-align:center;"></p>
 </div>
 
 <!-- FORM -->
@@ -126,6 +160,12 @@ input, select, textarea {
 <h2>Отчет смены</h2>
 
 <div class="card">
+<h3>Дата</h3>
+<input type="date" id="date">
+</div>
+
+<div class="card">
+<h3>Смена</h3>
 <select id="shift">
 <option>Утро</option>
 <option>Вечер</option>
@@ -145,40 +185,37 @@ input, select, textarea {
 </div>
 
 <div class="card">
+<div class="row">
 <h3>Как прошла смена</h3>
+<button class="small-btn" onclick="toggleTags()">Подсказки</button>
+</div>
 
 <textarea id="summary" placeholder="Опиши смену"></textarea>
-
-<button onclick="toggleTags()">Подсказки ▼</button>
-
 <div id="tags"></div>
 </div>
 
 <div class="card">
 <h3>Команда</h3>
 
-<label>🔥 Горячая</label>
 <select id="hot">
-<option value="">—</option>
+<option value="">— Горячая</option>
 <option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 
-<label>🥗 Холодная</label>
 <select id="cold">
-<option value="">—</option>
+<option value="">— Холодная</option>
 <option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 
-<label>👀 Проверка</label>
 <select id="control">
-<option value="">—</option>
+<option value="">— Проверка</option>
 <option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
 </select>
 </div>
 
 <div class="card">
 <h3>Проблемы</h3>
-<textarea id="problem" placeholder="Опиши проблему"></textarea>
+<textarea id="problem"></textarea>
 <input type="file" id="photoProblem" accept="image/*" capture="environment">
 </div>
 
@@ -188,8 +225,7 @@ input, select, textarea {
 
 <!-- DONE -->
 <div id="screenDone" class="hidden success">
-<h2>✅ Отчет отправлен</h2>
-<p>Спасибо 🙌</p>
+<h2>Отчет отправлен ✅</h2>
 <button onclick="location.reload()">Новый отчет</button>
 </div>
 
@@ -198,48 +234,72 @@ input, select, textarea {
 <script>
 
 let currentUser = "";
+let pin = "";
 
 // USER
 function selectUser(name){
   currentUser = name;
-  const saved = localStorage.getItem("pin_"+name);
+  pin = "";
+  updateDots();
 
   hideAll();
-
-  if(saved){
-    show("screenLogin");
-    document.getElementById("loginName").innerText = name;
-  } else {
-    show("screenCreate");
-    document.getElementById("createName").innerText = name;
-  }
+  show("screenPin");
+  document.getElementById("pinTitle").innerText = name;
 }
 
-// PIN
-function savePin(){
-  const pin = document.getElementById("createPin").value;
+// PIN PAD
+const pad = document.getElementById("pinPad");
 
-  if(pin.length !== 4){
-    alert("4 цифры");
-    return;
-  }
+[1,2,3,4,5,6,7,8,9,"←",0].forEach(n=>{
+  const b = document.createElement("div");
+  b.className = "pinBtn";
+  b.innerText = n;
 
-  localStorage.setItem("pin_"+currentUser, pin);
-  hideAll();
-  show("screenLogin");
+  b.onclick = ()=>{
+    if(n==="←"){
+      pin = pin.slice(0,-1);
+    } else if(pin.length < 4){
+      pin += n;
+    }
+
+    updateDots();
+
+    if(pin.length === 4){
+      login(pin);
+    }
+  };
+
+  pad.appendChild(b);
+});
+
+function updateDots(){
+  document.querySelectorAll(".dot").forEach((d,i)=>{
+    d.classList.toggle("active", i < pin.length);
+  });
 }
 
 // LOGIN
-function login(){
+function login(p){
   const saved = localStorage.getItem("pin_"+currentUser);
-  const input = document.getElementById("loginPin").value;
 
-  if(saved == input){
-    hideAll();
-    show("screenForm");
+  if(!saved){
+    localStorage.setItem("pin_"+currentUser, p);
+    enter();
+  } else if(saved === p){
+    enter();
   } else {
-    document.getElementById("error").innerText = "Неверный PIN";
+    document.getElementById("pinError").innerText = "Неверный PIN";
+    pin="";
+    updateDots();
   }
+}
+
+function enter(){
+  hideAll();
+  show("screenForm");
+
+  // авто дата сегодня
+  document.getElementById("date").valueAsDate = new Date();
 }
 
 // READY
@@ -249,12 +309,8 @@ function toggleLow(){
 }
 
 // TAGS
-let tagsVisible = false;
-
 function toggleTags(){
-  const el = document.getElementById("tags");
-  tagsVisible = !tagsVisible;
-  el.classList.toggle("show", tagsVisible);
+  document.getElementById("tags").classList.toggle("show");
 }
 
 const phrases = [
@@ -272,7 +328,6 @@ phrases.forEach(p=>{
 
   el.onclick = ()=>{
     const t = document.getElementById("summary");
-
     el.classList.toggle("active");
 
     if(el.classList.contains("active")){
@@ -299,6 +354,7 @@ async function send(){
 
   const data = {
     pin: currentUser,
+    date: document.getElementById("date").value,
     shift: document.getElementById("shift").value,
     ready: document.getElementById("ready").value,
     lowComment: document.getElementById("lowComment").value,
