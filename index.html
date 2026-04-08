@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Отчет</title>
+<title>Report</title>
 
 <style>
 body {
@@ -22,19 +22,21 @@ body {
   padding:16px;
 }
 
-/* HEADER */
-.topbar {
+/* LANGUAGE */
+.lang-switch {
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
+  gap:6px;
 }
 
-.lang {
-  font-size:12px;
+.lang-btn {
   padding:6px 10px;
-  background:#1c1c23;
+  font-size:12px;
   border-radius:10px;
+  background:#1c1c23;
+}
+
+.lang-btn.active {
+  background:#6d5dfc;
 }
 
 /* TEXT */
@@ -44,7 +46,6 @@ h1 {
   margin:20px 0;
 }
 
-/* CARD */
 .card {
   background:#141419;
   border-radius:16px;
@@ -58,7 +59,6 @@ h1 {
   margin-bottom:6px;
 }
 
-/* INPUTS */
 input, select, textarea {
   width:100%;
   padding:12px;
@@ -70,13 +70,11 @@ input, select, textarea {
   box-sizing:border-box;
 }
 
-/* FIX textarea */
 textarea {
   min-height:90px;
   resize:none;
 }
 
-/* BUTTON */
 button {
   width:100%;
   padding:14px;
@@ -86,14 +84,6 @@ button {
   color:white;
   font-size:16px;
   margin-top:10px;
-}
-
-/* SMALL BTN */
-.small-btn {
-  margin-top:10px;
-  background:#1c1c23;
-  font-size:12px;
-  padding:8px;
 }
 
 /* TAGS */
@@ -130,7 +120,6 @@ button {
 
 .pin-cell.active {
   border-color:#6d5dfc;
-  background:rgba(109,93,252,0.2);
 }
 
 .pin-dot {
@@ -154,13 +143,9 @@ button {
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
-  margin:auto;
 }
 
-.pin-btn:active {
-  transform:scale(0.9);
-}
+.hidden { display:none; }
 
 /* LOADING */
 .loader {
@@ -182,9 +167,6 @@ button {
 @keyframes spin {
   to { transform:rotate(360deg); }
 }
-
-.hidden { display:none; }
-.success { text-align:center; margin-top:80px; }
 </style>
 </head>
 
@@ -195,12 +177,13 @@ button {
 <!-- USERS -->
 <div id="users">
 
-<div class="topbar">
-<div></div>
-<div class="lang">RU / EN / HE</div>
+<div class="lang-switch">
+<div class="lang-btn active" onclick="setLang('ru')">RU</div>
+<div class="lang-btn" onclick="setLang('en')">EN</div>
+<div class="lang-btn" onclick="setLang('he')">HE</div>
 </div>
 
-<h1>Кто менеджер</h1>
+<h1 id="titleManagers">Кто менеджер</h1>
 
 <button onclick="selectUser('Егор')">Егор</button>
 <button onclick="selectUser('Стас')">Стас</button>
@@ -209,7 +192,6 @@ button {
 
 <!-- PIN -->
 <div id="pinScreen" class="hidden">
-
 <h1 id="pinTitle"></h1>
 
 <div class="pin-box">
@@ -220,71 +202,44 @@ button {
 </div>
 
 <div class="pin-pad" id="pinPad"></div>
-
-<p id="pinError" style="color:red;text-align:center;"></p>
-
 </div>
 
 <!-- FORM -->
 <div id="form" class="hidden">
 
-<h1>Отчет смены</h1>
+<h1 id="titleReport">Отчет смены</h1>
 
 <div class="card">
-<div class="label">Дата</div>
+<div class="label" id="labelDate">Дата</div>
 <input type="date" id="date">
 </div>
 
 <div class="card">
-<div class="label">Смена</div>
+<div class="label" id="labelShift">Смена</div>
 <select id="shift">
-<option>Утро</option>
-<option>Вечер</option>
+<option id="shiftMorning">Утро</option>
+<option id="shiftEvening">Вечер</option>
 </select>
 </div>
 
 <div class="card">
-<div class="label">Готовность</div>
+<div class="label" id="labelReady">Готовность</div>
 <select id="ready">
 <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
 </select>
 </div>
 
 <div class="card">
-<div class="label">Как прошла смена</div>
+<div class="label" id="labelSummary">Как прошла смена</div>
 <textarea id="summary"></textarea>
-
-<button class="small-btn" onclick="toggleTags()">Подсказки</button>
-<div id="tags"></div>
 </div>
 
 <div class="card">
-<div class="label">Команда</div>
-
-<select id="hot">
-<option>Горячая</option>
-<option>Егор</option><option>Стас</option>
-</select>
-
-<select id="cold">
-<option>Холодная</option>
-<option>Егор</option><option>Стас</option>
-</select>
-
-<select id="control">
-<option>Проверка</option>
-<option>Егор</option><option>Стас</option>
-</select>
-
-</div>
-
-<div class="card">
-<div class="label">Проблемы</div>
+<div class="label" id="labelProblem">Проблемы</div>
 <textarea id="problem"></textarea>
-<input type="file" id="photo">
 </div>
 
-<button onclick="send()">Отправить</button>
+<button onclick="send()" id="btnSend">Отправить</button>
 
 </div>
 
@@ -294,27 +249,89 @@ button {
 </div>
 
 <!-- DONE -->
-<div id="done" class="hidden success">
-<h1>Отчет отправлен ✅</h1>
+<div id="done" class="hidden">
+<h1 id="doneText">Отчет отправлен</h1>
 </div>
 
 </div>
 
 <script>
 
-let user="";
-let pin="";
+let lang = "ru";
 
-// USER
-function selectUser(name){
-  user=name;
-  pin="";
-  renderPin();
-  showOnly("pinScreen");
-  document.getElementById("pinTitle").innerText=name;
+const translations = {
+ru:{
+managers:"Кто менеджер",
+report:"Отчет смены",
+date:"Дата",
+shift:"Смена",
+morning:"Утро",
+evening:"Вечер",
+ready:"Готовность",
+summary:"Как прошла смена",
+problem:"Проблемы",
+send:"Отправить",
+done:"Отчет отправлен"
+},
+en:{
+managers:"Manager",
+report:"Shift report",
+date:"Date",
+shift:"Shift",
+morning:"Morning",
+evening:"Evening",
+ready:"Readiness",
+summary:"Shift summary",
+problem:"Problems",
+send:"Send",
+done:"Report sent"
+},
+he:{
+managers:"מנהל",
+report:"דוח משמרת",
+date:"תאריך",
+shift:"משמרת",
+morning:"בוקר",
+evening:"ערב",
+ready:"מוכנות",
+summary:"איך עברה המשמרת",
+problem:"בעיות",
+send:"שלח",
+done:"הדוח נשלח"
+}
+};
+
+// LANGUAGE SWITCH
+function setLang(l){
+  lang = l;
+
+  document.querySelectorAll(".lang-btn").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  const t = translations[l];
+
+  document.getElementById("titleManagers").innerText = t.managers;
+  document.getElementById("titleReport").innerText = t.report;
+  document.getElementById("labelDate").innerText = t.date;
+  document.getElementById("labelShift").innerText = t.shift;
+  document.getElementById("shiftMorning").innerText = t.morning;
+  document.getElementById("shiftEvening").innerText = t.evening;
+  document.getElementById("labelReady").innerText = t.ready;
+  document.getElementById("labelSummary").innerText = t.summary;
+  document.getElementById("labelProblem").innerText = t.problem;
+  document.getElementById("btnSend").innerText = t.send;
+  document.getElementById("doneText").innerText = t.done;
 }
 
 // PIN
+let user="";
+let pin="";
+
+function selectUser(name){
+  user=name;
+  showOnly("pinScreen");
+}
+
 const pad=document.getElementById("pinPad");
 
 [1,2,3,4,5,6,7,8,9,"←",0].forEach(n=>{
@@ -326,65 +343,16 @@ const pad=document.getElementById("pinPad");
     if(n==="←"){ pin=pin.slice(0,-1); }
     else if(pin.length<4){ pin+=n; }
 
-    renderPin();
-
     if(pin.length===4){ enter(); }
   };
 
   pad.appendChild(b);
 });
 
-function renderPin(){
-  const cells=document.querySelectorAll(".pin-cell");
-
-  cells.forEach((c,i)=>{
-    c.innerHTML="";
-    c.classList.remove("active");
-
-    if(i<pin.length){
-      const dot=document.createElement("div");
-      dot.className="pin-dot";
-      c.appendChild(dot);
-    }
-
-    if(i===pin.length){
-      c.classList.add("active");
-    }
-  });
-}
-
-// ENTER
 function enter(){
   showOnly("form");
   document.getElementById("date").valueAsDate=new Date();
 }
-
-// TAGS
-function toggleTags(){
-  const t=document.getElementById("tags");
-  t.style.display = t.style.display==="block" ? "none" : "block";
-}
-
-const phrases=["Большая нагрузка","Все прошло спокойно","Были задержки"];
-
-const tagsDiv=document.getElementById("tags");
-
-phrases.forEach(p=>{
-  const el=document.createElement("div");
-  el.className="tag";
-  el.innerText=p;
-
-  el.onclick=()=>{
-    el.classList.toggle("active");
-    const t=document.getElementById("summary");
-
-    if(el.classList.contains("active")){
-      t.value+=(t.value?", ":"")+p;
-    }
-  };
-
-  tagsDiv.appendChild(el);
-});
 
 // SEND
 async function send(){
@@ -393,24 +361,25 @@ async function send(){
 
   const data = {
     user,
-    date: document.getElementById("date").value,
-    shift: document.getElementById("shift").value,
-    ready: document.getElementById("ready").value,
-    summary: document.getElementById("summary").value,
-    problem: document.getElementById("problem").value,
-    hot: document.getElementById("hot").value,
-    cold: document.getElementById("cold").value,
-    control: document.getElementById("control").value
+    date:document.getElementById("date").value,
+    shift:document.getElementById("shift").value
   };
 
-  try {
-    await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-  } catch (e) {
-    alert("Ошибка отправки");
-  }
+  await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
+    method:"POST",
+    body:JSON.stringify(data)
+  });
 
   showOnly("done");
 }
+
+// HELPERS
+function showOnly(id){
+  document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+</script>
+
+</body>
+</html>
