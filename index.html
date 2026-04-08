@@ -7,9 +7,9 @@
 <style>
 body{
 margin:0;
-background:#f5f6fa;
-font-family:-apple-system, BlinkMacSystemFont;
-color:#111;
+background:#0a0a0f;
+font-family:-apple-system;
+color:white;
 display:flex;
 justify-content:center;
 }
@@ -24,43 +24,44 @@ padding:16px;
 .lang{
 display:flex;
 gap:6px;
-justify-content:flex-end;
+justify-content:center;
 margin-bottom:10px;
 }
 
 .lang button{
 padding:6px 10px;
 border-radius:8px;
+background:#1c1c24;
 border:none;
-background:#e5e7eb;
+color:white;
+font-size:12px;
 }
 
 .lang .active{
-background:#6366f1;
-color:white;
+background:#6d5dfc;
 }
 
 /* CARD */
 .card{
-background:white;
+background:#15151d;
 padding:14px;
-border-radius:14px;
+border-radius:16px;
 margin-bottom:12px;
-box-shadow:0 2px 8px rgba(0,0,0,0.05);
 }
 
 .label{
 font-size:13px;
-color:#666;
+color:#aaa;
 margin-bottom:6px;
 }
 
 input,select,textarea{
 width:100%;
 padding:12px;
-border-radius:10px;
-border:1px solid #ddd;
-font-size:15px;
+border-radius:12px;
+border:none;
+background:#1f1f28;
+color:white;
 }
 
 textarea{
@@ -73,34 +74,33 @@ height:90px;
 width:100%;
 padding:14px;
 border:none;
-border-radius:12px;
-background:#6366f1;
+border-radius:14px;
+background:linear-gradient(135deg,#6d5dfc,#8b7cff);
 color:white;
 font-size:16px;
 margin-top:10px;
 }
 
 .secondary{
-background:#eee;
-color:#333;
-padding:8px 10px;
-border-radius:8px;
+background:#1f1f28;
+padding:8px 12px;
+border-radius:10px;
 font-size:12px;
+width:auto;
 }
 
-/* TAGS */
+/* TAG */
 .tag{
 display:inline-block;
 padding:6px 10px;
-background:#eee;
-border-radius:8px;
+background:#1f1f28;
+border-radius:10px;
 margin:4px;
 font-size:12px;
 }
 
 .tag.active{
-background:#6366f1;
-color:white;
+background:#6d5dfc;
 }
 
 /* PIN */
@@ -114,8 +114,8 @@ margin:20px 0;
 .pin-cell{
 width:50px;
 height:50px;
-border-radius:10px;
-border:2px solid #ddd;
+border-radius:12px;
+border:2px solid #333;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -124,20 +124,20 @@ justify-content:center;
 .pin-dot{
 width:8px;
 height:8px;
-background:#111;
+background:white;
 border-radius:50%;
 }
 
 .pin-pad{
 display:grid;
 grid-template-columns:repeat(3,1fr);
-gap:14px;
+gap:16px;
 }
 
 .pin-btn{
 height:60px;
 border-radius:50%;
-background:#eee;
+background:#1c1c24;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -152,6 +152,7 @@ font-size:18px;
 
 <div class="app">
 
+<!-- LANG -->
 <div class="lang">
 <button onclick="setLang('ru')" class="active">RU</button>
 <button onclick="setLang('en')">EN</button>
@@ -211,12 +212,12 @@ font-size:18px;
 </div>
 
 <div class="card">
-<div class="label">Выброс</div>
+<div class="label">Выброс продукции</div>
 <div id="waste"></div>
 </div>
 
 <div class="card">
-<div class="label">Описание смены</div>
+<div class="label">Как прошла смена</div>
 <textarea id="summary"></textarea>
 
 <div style="display:flex;justify-content:flex-end;">
@@ -232,16 +233,17 @@ font-size:18px;
 <input type="file" id="problemPhoto">
 </div>
 
-<button class="main" onclick="goTraining()">Далее</button>
+<button class="main" onclick="goTraining()">Далее →</button>
 
 </div>
 
 <!-- TRAINING -->
 <div id="training" class="hidden">
+
 <h2>Ученичество</h2>
 
 <div class="card">
-<div class="label">Ученик</div>
+<div class="label">Выбор ученика</div>
 <select id="student">
 <option>Алекс</option>
 <option>Яков</option>
@@ -250,7 +252,7 @@ font-size:18px;
 </div>
 
 <div class="card">
-<div class="label">Описание</div>
+<div class="label">Описание ученичества</div>
 <textarea id="study"></textarea>
 </div>
 
