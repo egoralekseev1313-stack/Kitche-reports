@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Отчет смены</title>
+<title>Отчет кухни</title>
 
 <style>
 body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background:#f5f5f7;
   margin:0;
-  padding:0;
+  font-family:-apple-system;
+  background:#0b0b0f;
+  color:white;
   display:flex;
   justify-content:center;
 }
@@ -21,63 +21,64 @@ body {
   padding:20px;
 }
 
+/* TEXT */
 h1 {
   text-align:center;
-  font-size:22px;
-  margin-bottom:20px;
+  font-size:24px;
+  margin:30px 0;
 }
 
+/* CARDS */
 .card {
-  background:white;
+  background:#141419;
   border-radius:16px;
   padding:16px;
   margin-bottom:14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .label {
-  font-size:14px;
-  color:#6b7280;
+  font-size:13px;
+  color:#9ca3af;
   margin-bottom:6px;
 }
 
+/* INPUTS */
 input, select, textarea {
   width:100%;
-  padding:12px;
+  padding:14px;
   border-radius:12px;
-  border:1px solid #e5e7eb;
+  border:none;
+  background:#1c1c23;
+  color:white;
   font-size:15px;
-  background:#fafafa;
 }
 
-textarea {
-  min-height:80px;
-}
+textarea { min-height:80px; }
 
+/* BUTTON */
 button {
   width:100%;
   padding:14px;
   border:none;
   border-radius:14px;
-  background:#111827;
+  background:#6d5dfc;
   color:white;
   font-size:16px;
   margin-top:10px;
 }
 
-button:active {
-  opacity:0.9;
-}
+button:active { transform:scale(0.96); }
 
+/* SMALL BTN */
 .small-btn {
-  font-size:12px;
+  background:#1c1c23;
   padding:6px 10px;
-  background:#f3f4f6;
-  color:#111;
+  font-size:12px;
   border-radius:10px;
-  border:none;
+  width:auto;
 }
 
+/* ROW */
 .row {
   display:flex;
   justify-content:space-between;
@@ -87,16 +88,15 @@ button:active {
 /* TAGS */
 .tag {
   display:inline-block;
-  padding:6px 10px;
+  padding:8px 10px;
   margin:4px;
-  background:#f3f4f6;
+  background:#1c1c23;
   border-radius:10px;
   font-size:13px;
 }
 
 .tag.active {
-  background:#111827;
-  color:white;
+  background:#6d5dfc;
 }
 
 #tags {
@@ -105,47 +105,61 @@ button:active {
 }
 
 /* PIN */
-.pin-dots {
+.pin-box {
   display:flex;
   justify-content:center;
-  margin:20px 0;
+  gap:12px;
+  margin-bottom:40px;
 }
 
-.dot {
+.pin-cell {
+  width:60px;
+  height:60px;
+  border-radius:14px;
+  border:2px solid #333;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pin-cell.active {
+  border-color:#6d5dfc;
+  background:rgba(109,93,252,0.2);
+}
+
+.pin-dot {
   width:10px;
   height:10px;
+  background:white;
   border-radius:50%;
-  border:1px solid #ccc;
-  margin:6px;
-}
-
-.dot.active {
-  background:#111;
 }
 
 .pin-pad {
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  gap:18px;
+  padding:0 30px;
 }
 
 .pin-btn {
-  padding:18px;
-  background:white;
-  border-radius:14px;
-  text-align:center;
-  font-size:18px;
-  border:1px solid #e5e7eb;
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#1a1a1f;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  margin:auto;
 }
 
-.hidden {
-  display:none;
+.pin-btn:active {
+  transform:scale(0.9);
+  background:#2a2a33;
 }
 
-.success {
-  text-align:center;
-  margin-top:100px;
-}
+.hidden { display:none; }
+.success { text-align:center; margin-top:100px; }
 </style>
 </head>
 
@@ -153,7 +167,7 @@ button:active {
 
 <div class="container">
 
-<!-- USER -->
+<!-- USERS -->
 <div id="users">
 <h1>Кто менеджер</h1>
 <button onclick="selectUser('Егор')">Егор</button>
@@ -164,15 +178,14 @@ button:active {
 <div id="pinScreen" class="hidden">
 <h1 id="pinTitle"></h1>
 
-<div class="pin-dots">
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
+<div class="pin-box">
+<div class="pin-cell"></div>
+<div class="pin-cell"></div>
+<div class="pin-cell"></div>
+<div class="pin-cell"></div>
 </div>
 
 <div class="pin-pad" id="pinPad"></div>
-
 <p id="pinError" style="color:red;text-align:center;"></p>
 </div>
 
@@ -195,7 +208,7 @@ button:active {
 </div>
 
 <div class="card">
-<div class="label">Готовность кухни</div>
+<div class="label">Готовность</div>
 <select id="ready" onchange="toggleLow()">
 <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
 </select>
@@ -213,7 +226,6 @@ button:active {
 </div>
 
 <textarea id="summary"></textarea>
-
 <div id="tags"></div>
 </div>
 
@@ -256,48 +268,55 @@ button:active {
 
 <script>
 
-let user = "";
-let pin = "";
+let user="";
+let pin="";
 
 // USER
 function selectUser(name){
-  user = name;
-  pin = "";
-  updateDots();
-
+  user=name;
+  pin="";
+  renderPin();
   hideAll();
   show("pinScreen");
-  document.getElementById("pinTitle").innerText = name;
+  document.getElementById("pinTitle").innerText=name;
 }
 
 // PIN
-const pad = document.getElementById("pinPad");
+const pad=document.getElementById("pinPad");
 
 [1,2,3,4,5,6,7,8,9,"←",0].forEach(n=>{
-  const b = document.createElement("div");
+  const b=document.createElement("div");
   b.className="pin-btn";
   b.innerText=n;
 
   b.onclick=()=>{
-    if(n==="←"){
-      pin=pin.slice(0,-1);
-    } else if(pin.length<4){
-      pin+=n;
-    }
+    if(n==="←"){ pin=pin.slice(0,-1); }
+    else if(pin.length<4){ pin+=n; }
 
-    updateDots();
+    renderPin();
 
-    if(pin.length===4){
-      login(pin);
-    }
+    if(pin.length===4){ login(pin); }
   };
 
   pad.appendChild(b);
 });
 
-function updateDots(){
-  document.querySelectorAll(".dot").forEach((d,i)=>{
-    d.classList.toggle("active", i<pin.length);
+function renderPin(){
+  const cells=document.querySelectorAll(".pin-cell");
+
+  cells.forEach((c,i)=>{
+    c.innerHTML="";
+    c.classList.remove("active");
+
+    if(i<pin.length){
+      const dot=document.createElement("div");
+      dot.className="pin-dot";
+      c.appendChild(dot);
+    }
+
+    if(i===pin.length){
+      c.classList.add("active");
+    }
   });
 }
 
@@ -313,7 +332,7 @@ function login(p){
   } else {
     document.getElementById("pinError").innerText="Неверный PIN";
     pin="";
-    updateDots();
+    renderPin();
   }
 }
 
@@ -323,7 +342,7 @@ function enter(){
   document.getElementById("date").valueAsDate=new Date();
 }
 
-// LOW READY
+// LOW
 function toggleLow(){
   const val=document.getElementById("ready").value;
   document.getElementById("lowBlock").classList.toggle("hidden", val>=4);
@@ -350,7 +369,6 @@ phrases.forEach(p=>{
 
   el.onclick=()=>{
     el.classList.toggle("active");
-
     const t=document.getElementById("summary");
 
     if(el.classList.contains("active")){
@@ -365,18 +383,12 @@ phrases.forEach(p=>{
 
 // SEND
 async function send(){
-
   const data={
     user,
     date:document.getElementById("date").value,
     shift:document.getElementById("shift").value,
     ready:document.getElementById("ready").value,
-    lowComment:document.getElementById("lowComment").value,
-    summary:document.getElementById("summary").value,
-    hot:document.getElementById("hot").value,
-    cold:document.getElementById("cold").value,
-    control:document.getElementById("control").value,
-    problem:document.getElementById("problem").value
+    summary:document.getElementById("summary").value
   };
 
   await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
@@ -392,7 +404,6 @@ async function send(){
 function hideAll(){
   document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
 }
-
 function show(id){
   document.getElementById(id).classList.remove("hidden");
 }
