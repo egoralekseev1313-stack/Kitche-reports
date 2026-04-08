@@ -13,22 +13,32 @@ color:white;
 display:flex;
 justify-content:center;
 }
+
 .app{
 width:100%;
 max-width:420px;
 padding:16px;
 }
+
+h2{
+text-align:center;
+margin:20px 0;
+}
+
+/* CARDS */
 .card{
 background:#15151d;
 padding:14px;
 border-radius:16px;
 margin-bottom:12px;
 }
+
 .label{
 font-size:13px;
 color:#aaa;
 margin-bottom:6px;
 }
+
 input,select,textarea{
 width:100%;
 padding:12px;
@@ -36,8 +46,16 @@ border-radius:12px;
 border:none;
 background:#1f1f28;
 color:white;
+font-size:15px;
+box-sizing:border-box;
 }
-textarea{resize:none;height:80px;}
+
+textarea{
+resize:none;
+height:90px;
+}
+
+/* BUTTON */
 button{
 width:100%;
 padding:14px;
@@ -45,32 +63,100 @@ border:none;
 border-radius:14px;
 background:linear-gradient(135deg,#6d5dfc,#8b7cff);
 color:white;
+font-size:16px;
 margin-top:10px;
 }
-.hidden{display:none;}
+
+/* TAGS */
 .tag{
 display:inline-block;
 padding:6px 10px;
 background:#1f1f28;
 border-radius:10px;
 margin:4px;
+font-size:13px;
 }
-.tag.active{background:#6d5dfc;}
+
+.tag.active{
+background:#6d5dfc;
+}
+
+/* PIN */
+.pin-box{
+display:flex;
+justify-content:center;
+gap:10px;
+margin:20px 0;
+}
+
+.pin-cell{
+width:50px;
+height:50px;
+border-radius:12px;
+border:2px solid #333;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.pin-dot{
+width:8px;
+height:8px;
+background:white;
+border-radius:50%;
+}
+
+.pin-pad{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
+justify-items:center;
+}
+
+.pin-btn{
+width:70px;
+height:70px;
+border-radius:50%;
+background:#1c1c24;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+}
+
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
+<!-- LOGIN -->
 <div id="login">
-<h2>Менеджер</h2>
+<h2>Кто менеджер</h2>
 <button onclick="selectUser('Егор')">Егор</button>
 <button onclick="selectUser('Стас')">Стас</button>
 </div>
 
+<!-- PIN -->
+<div id="pin" class="hidden">
+<h2>Введите PIN</h2>
+
+<div class="pin-box" id="pinBox">
+<div class="pin-cell"></div>
+<div class="pin-cell"></div>
+<div class="pin-cell"></div>
+<div class="pin-cell"></div>
+</div>
+
+<div class="pin-pad" id="pad"></div>
+</div>
+
+<!-- FORM -->
 <div id="form" class="hidden">
 
-<h2>Отчет</h2>
+<h2>Отчет смены</h2>
 
 <div class="card">
 <div class="label">Дата</div>
@@ -86,25 +172,29 @@ margin:4px;
 </div>
 
 <div class="card">
-<div class="label">Готовность</div>
+<div class="label">Готовность кухни</div>
 <select id="ready" onchange="checkReady()">
-<option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+<option>5</option>
+<option>4</option>
+<option>3</option>
+<option>2</option>
+<option>1</option>
 </select>
 </div>
 
 <div id="lowBlock" class="card hidden">
-<div class="label">Почему</div>
+<div class="label">Причина низкой готовности</div>
 <textarea id="lowReason"></textarea>
 <input type="file" id="lowPhoto">
 </div>
 
 <div class="card">
-<div class="label">Выброс</div>
+<div class="label">Выброс продукции</div>
 <div id="waste"></div>
 </div>
 
 <div class="card">
-<div class="label">Описание смены</div>
+<div class="label">Как прошла смена</div>
 <textarea id="summary"></textarea>
 <button onclick="toggleHints()">Подсказки</button>
 <div id="hints" class="hidden"></div>
@@ -120,6 +210,7 @@ margin:4px;
 
 </div>
 
+<!-- TRAINING -->
 <div id="training" class="hidden">
 <h2>Ученичество</h2>
 
@@ -139,25 +230,70 @@ margin:4px;
 
 </div>
 
+<!-- DONE -->
 <div id="done" class="hidden">
-<h2>Готово ✅</h2>
+<h2>Отчет отправлен ✅</h2>
 </div>
 
 </div>
 
 <script>
 
-const SCRIPT_URL="ВСТАВЬ СЮДА";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec";
 
 let user="";
+let pin="";
 
-function selectUser(name){
-user=name;
-document.getElementById("login").classList.add("hidden");
-document.getElementById("form").classList.remove("hidden");
-date.valueAsDate=new Date();
+/* NAVIGATION */
+function show(id){
+["login","pin","form","training","done"].forEach(x=>{
+document.getElementById(x).classList.add("hidden");
+});
+document.getElementById(id).classList.remove("hidden");
 }
 
+/* LOGIN */
+function selectUser(name){
+user=name;
+pin="";
+updatePin();
+show("pin");
+}
+
+/* PIN PAD */
+const pad=document.getElementById("pad");
+
+[1,2,3,4,5,6,7,8,9,"←",0].forEach(n=>{
+const b=document.createElement("div");
+b.className="pin-btn";
+b.innerText=n;
+
+b.onclick=()=>{
+if(n==="←"){pin=pin.slice(0,-1);}
+else if(pin.length<4){pin+=n;}
+
+updatePin();
+
+if(pin.length===4){
+setTimeout(()=>{
+show("form");
+document.getElementById("date").valueAsDate=new Date();
+},200);
+}
+};
+
+pad.appendChild(b);
+});
+
+/* PIN UI */
+function updatePin(){
+const cells=document.querySelectorAll(".pin-cell");
+cells.forEach((c,i)=>{
+c.innerHTML = i < pin.length ? "<div class='pin-dot'></div>" : "";
+});
+}
+
+/* READY */
 function checkReady(){
 if(ready.value<4){
 lowBlock.classList.remove("hidden");
@@ -166,6 +302,7 @@ lowBlock.classList.add("hidden");
 }
 }
 
+/* PRODUCTS */
 const products=["Гуакамоле","Курица","Котлеты","Сальса","Тхина","Перец"];
 const wasteDiv=document.getElementById("waste");
 
@@ -177,16 +314,18 @@ t.onclick=()=>t.classList.toggle("active");
 wasteDiv.appendChild(t);
 });
 
+/* HINTS */
 function toggleHints(){
 hints.classList.toggle("hidden");
-hints.innerHTML="Большая нагрузка, нехватка персонала...";
+hints.innerHTML="Большая нагрузка, нехватка персонала, задержки заказов...";
 }
 
+/* NAV */
 function goTraining(){
-form.classList.add("hidden");
-training.classList.remove("hidden");
+show("training");
 }
 
+/* SEND */
 async function send(){
 
 const data={
@@ -201,13 +340,12 @@ student:student.value,
 study:study.value
 };
 
-await fetch(https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec,{
+await fetch(SCRIPT_URL,{
 method:"POST",
 body:JSON.stringify(data)
 });
 
-training.classList.add("hidden");
-done.classList.remove("hidden");
+show("done");
 }
 
 </script>
