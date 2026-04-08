@@ -20,28 +20,12 @@ max-width:420px;
 padding:16px;
 }
 
-/* LANG */
-.lang{
-display:flex;
-gap:6px;
-justify-content:center;
-margin-bottom:10px;
+h2{
+text-align:center;
+margin:20px 0;
 }
 
-.lang button{
-padding:6px 10px;
-border-radius:8px;
-background:#1c1c24;
-border:none;
-color:white;
-font-size:12px;
-}
-
-.lang .active{
-background:#6d5dfc;
-}
-
-/* CARD */
+/* CARDS */
 .card{
 background:#15151d;
 padding:14px;
@@ -62,6 +46,8 @@ border-radius:12px;
 border:none;
 background:#1f1f28;
 color:white;
+font-size:15px;
+box-sizing:border-box;
 }
 
 textarea{
@@ -70,7 +56,7 @@ height:90px;
 }
 
 /* BUTTON */
-.main{
+button{
 width:100%;
 padding:14px;
 border:none;
@@ -81,22 +67,14 @@ font-size:16px;
 margin-top:10px;
 }
 
-.secondary{
-background:#1f1f28;
-padding:8px 12px;
-border-radius:10px;
-font-size:12px;
-width:auto;
-}
-
-/* TAG */
+/* TAGS */
 .tag{
 display:inline-block;
 padding:6px 10px;
 background:#1f1f28;
 border-radius:10px;
 margin:4px;
-font-size:12px;
+font-size:13px;
 }
 
 .tag.active{
@@ -132,16 +110,18 @@ border-radius:50%;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:16px;
+justify-items:center;
 }
 
 .pin-btn{
-height:60px;
+width:70px;
+height:70px;
 border-radius:50%;
 background:#1c1c24;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:18px;
+font-size:20px;
 }
 
 .hidden{display:none;}
@@ -152,25 +132,18 @@ font-size:18px;
 
 <div class="app">
 
-<!-- LANG -->
-<div class="lang">
-<button onclick="setLang('ru')" class="active">RU</button>
-<button onclick="setLang('en')">EN</button>
-<button onclick="setLang('he')">HE</button>
-</div>
-
 <!-- LOGIN -->
 <div id="login">
-<h2 id="t1">Кто менеджер</h2>
-<button class="main" onclick="selectUser('Егор')">Егор</button>
-<button class="main" onclick="selectUser('Стас')">Стас</button>
+<h2>Кто менеджер</h2>
+<button onclick="selectUser('Егор')">Егор</button>
+<button onclick="selectUser('Стас')">Стас</button>
 </div>
 
 <!-- PIN -->
 <div id="pin" class="hidden">
-<h2 id="t2">Введите PIN</h2>
+<h2>Введите PIN</h2>
 
-<div class="pin-box">
+<div class="pin-box" id="pinBox">
 <div class="pin-cell"></div>
 <div class="pin-cell"></div>
 <div class="pin-cell"></div>
@@ -183,7 +156,7 @@ font-size:18px;
 <!-- FORM -->
 <div id="form" class="hidden">
 
-<h2 id="t3">Отчет смены</h2>
+<h2>Отчет смены</h2>
 
 <div class="card">
 <div class="label">Дата</div>
@@ -199,14 +172,18 @@ font-size:18px;
 </div>
 
 <div class="card">
-<div class="label">Готовность</div>
+<div class="label">Готовность кухни</div>
 <select id="ready" onchange="checkReady()">
-<option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+<option>5</option>
+<option>4</option>
+<option>3</option>
+<option>2</option>
+<option>1</option>
 </select>
 </div>
 
 <div id="lowBlock" class="card hidden">
-<div class="label">Причина</div>
+<div class="label">Причина низкой готовности</div>
 <textarea id="lowReason"></textarea>
 <input type="file" id="lowPhoto">
 </div>
@@ -219,11 +196,7 @@ font-size:18px;
 <div class="card">
 <div class="label">Как прошла смена</div>
 <textarea id="summary"></textarea>
-
-<div style="display:flex;justify-content:flex-end;">
-<button class="secondary" onclick="toggleHints()">Подсказки</button>
-</div>
-
+<button onclick="toggleHints()">Подсказки</button>
 <div id="hints" class="hidden"></div>
 </div>
 
@@ -233,17 +206,15 @@ font-size:18px;
 <input type="file" id="problemPhoto">
 </div>
 
-<button class="main" onclick="goTraining()">Далее →</button>
+<button onclick="goTraining()">Далее →</button>
 
 </div>
 
 <!-- TRAINING -->
 <div id="training" class="hidden">
-
 <h2>Ученичество</h2>
 
 <div class="card">
-<div class="label">Выбор ученика</div>
 <select id="student">
 <option>Алекс</option>
 <option>Яков</option>
@@ -252,11 +223,10 @@ font-size:18px;
 </div>
 
 <div class="card">
-<div class="label">Описание ученичества</div>
 <textarea id="study"></textarea>
 </div>
 
-<button class="main" onclick="send()">Отправить</button>
+<button onclick="send()">Отправить</button>
 
 </div>
 
@@ -274,7 +244,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycby9W0ZHykeYaN95YUo7C1G
 let user="";
 let pin="";
 
-/* NAV */
+/* NAVIGATION */
 function show(id){
 ["login","pin","form","training","done"].forEach(x=>{
 document.getElementById(x).classList.add("hidden");
@@ -290,7 +260,7 @@ updatePin();
 show("pin");
 }
 
-/* PIN */
+/* PIN PAD */
 const pad=document.getElementById("pad");
 
 [1,2,3,4,5,6,7,8,9,"←",0].forEach(n=>{
@@ -307,7 +277,7 @@ updatePin();
 if(pin.length===4){
 setTimeout(()=>{
 show("form");
-date.valueAsDate=new Date();
+document.getElementById("date").valueAsDate=new Date();
 },200);
 }
 };
@@ -315,9 +285,11 @@ date.valueAsDate=new Date();
 pad.appendChild(b);
 });
 
+/* PIN UI */
 function updatePin(){
-document.querySelectorAll(".pin-cell").forEach((c,i)=>{
-c.innerHTML=i<pin.length?"<div class='pin-dot'></div>":"";
+const cells=document.querySelectorAll(".pin-cell");
+cells.forEach((c,i)=>{
+c.innerHTML = i < pin.length ? "<div class='pin-dot'></div>" : "";
 });
 }
 
@@ -332,18 +304,20 @@ lowBlock.classList.add("hidden");
 
 /* PRODUCTS */
 const products=["Гуакамоле","Курица","Котлеты","Сальса","Тхина","Перец"];
+const wasteDiv=document.getElementById("waste");
+
 products.forEach(p=>{
-const el=document.createElement("div");
-el.className="tag";
-el.innerText=p;
-el.onclick=()=>el.classList.toggle("active");
-waste.appendChild(el);
+const t=document.createElement("div");
+t.className="tag";
+t.innerText=p;
+t.onclick=()=>t.classList.toggle("active");
+wasteDiv.appendChild(t);
 });
 
 /* HINTS */
 function toggleHints(){
 hints.classList.toggle("hidden");
-hints.innerHTML="Большая нагрузка, нехватка персонала, задержки...";
+hints.innerHTML="Большая нагрузка, нехватка персонала, задержки заказов...";
 }
 
 /* NAV */
