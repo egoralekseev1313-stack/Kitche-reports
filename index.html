@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Отчет кухни</title>
+
+<title>Отчет</title>
 
 <style>
 body {
@@ -18,22 +19,37 @@ body {
 .container {
   width:100%;
   max-width:420px;
-  padding:20px;
+  padding:16px;
+}
+
+/* HEADER */
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.lang {
+  font-size:12px;
+  padding:6px 10px;
+  background:#1c1c23;
+  border-radius:10px;
 }
 
 /* TEXT */
 h1 {
   text-align:center;
-  font-size:24px;
-  margin:30px 0;
+  font-size:22px;
+  margin:20px 0;
 }
 
-/* CARDS */
+/* CARD */
 .card {
   background:#141419;
   border-radius:16px;
-  padding:16px;
-  margin-bottom:14px;
+  padding:14px;
+  margin-bottom:12px;
 }
 
 .label {
@@ -45,15 +61,20 @@ h1 {
 /* INPUTS */
 input, select, textarea {
   width:100%;
-  padding:14px;
+  padding:12px;
   border-radius:12px;
   border:none;
   background:#1c1c23;
   color:white;
   font-size:15px;
+  box-sizing:border-box;
 }
 
-textarea { min-height:80px; }
+/* FIX textarea */
+textarea {
+  min-height:90px;
+  resize:none;
+}
 
 /* BUTTON */
 button {
@@ -67,55 +88,40 @@ button {
   margin-top:10px;
 }
 
-button:active { transform:scale(0.96); }
-
 /* SMALL BTN */
 .small-btn {
+  margin-top:10px;
   background:#1c1c23;
-  padding:6px 10px;
   font-size:12px;
-  border-radius:10px;
-  width:auto;
-}
-
-/* ROW */
-.row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  padding:8px;
 }
 
 /* TAGS */
 .tag {
   display:inline-block;
-  padding:8px 10px;
+  padding:6px 10px;
   margin:4px;
   background:#1c1c23;
   border-radius:10px;
-  font-size:13px;
+  font-size:12px;
 }
 
 .tag.active {
   background:#6d5dfc;
 }
 
-#tags {
-  display:none;
-  margin-top:10px;
-}
-
 /* PIN */
 .pin-box {
   display:flex;
   justify-content:center;
-  gap:12px;
-  margin-bottom:40px;
+  gap:10px;
+  margin:30px 0;
 }
 
 .pin-cell {
-  width:60px;
-  height:60px;
-  border-radius:14px;
+  width:55px;
+  height:55px;
+  border-radius:12px;
   border:2px solid #333;
   display:flex;
   align-items:center;
@@ -128,8 +134,8 @@ button:active { transform:scale(0.96); }
 }
 
 .pin-dot {
-  width:10px;
-  height:10px;
+  width:8px;
+  height:8px;
   background:white;
   border-radius:50%;
 }
@@ -137,29 +143,48 @@ button:active { transform:scale(0.96); }
 .pin-pad {
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:18px;
-  padding:0 30px;
+  gap:16px;
 }
 
 .pin-btn {
-  width:80px;
-  height:80px;
+  width:70px;
+  height:70px;
   border-radius:50%;
-  background:#1a1a1f;
+  background:#1c1c23;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:22px;
+  font-size:20px;
   margin:auto;
 }
 
 .pin-btn:active {
   transform:scale(0.9);
-  background:#2a2a33;
+}
+
+/* LOADING */
+.loader {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:60vh;
+}
+
+.spinner {
+  width:40px;
+  height:40px;
+  border:4px solid #333;
+  border-top:4px solid #6d5dfc;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform:rotate(360deg); }
 }
 
 .hidden { display:none; }
-.success { text-align:center; margin-top:100px; }
+.success { text-align:center; margin-top:80px; }
 </style>
 </head>
 
@@ -169,13 +194,22 @@ button:active { transform:scale(0.96); }
 
 <!-- USERS -->
 <div id="users">
+
+<div class="topbar">
+<div></div>
+<div class="lang">RU / EN / HE</div>
+</div>
+
 <h1>Кто менеджер</h1>
+
 <button onclick="selectUser('Егор')">Егор</button>
 <button onclick="selectUser('Стас')">Стас</button>
+
 </div>
 
 <!-- PIN -->
 <div id="pinScreen" class="hidden">
+
 <h1 id="pinTitle"></h1>
 
 <div class="pin-box">
@@ -186,7 +220,9 @@ button:active { transform:scale(0.96); }
 </div>
 
 <div class="pin-pad" id="pinPad"></div>
+
 <p id="pinError" style="color:red;text-align:center;"></p>
+
 </div>
 
 <!-- FORM -->
@@ -209,23 +245,16 @@ button:active { transform:scale(0.96); }
 
 <div class="card">
 <div class="label">Готовность</div>
-<select id="ready" onchange="toggleLow()">
+<select id="ready">
 <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
 </select>
-
-<div id="lowBlock" class="hidden">
-<textarea id="lowComment" placeholder="Причина"></textarea>
-<input type="file" id="photoReady">
-</div>
 </div>
 
 <div class="card">
-<div class="row">
 <div class="label">Как прошла смена</div>
-<button class="small-btn" onclick="toggleTags()">Подсказки</button>
-</div>
-
 <textarea id="summary"></textarea>
+
+<button class="small-btn" onclick="toggleTags()">Подсказки</button>
 <div id="tags"></div>
 </div>
 
@@ -233,35 +262,40 @@ button:active { transform:scale(0.96); }
 <div class="label">Команда</div>
 
 <select id="hot">
-<option value="">Горячая</option>
-<option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
+<option>Горячая</option>
+<option>Егор</option><option>Стас</option>
 </select>
 
 <select id="cold">
-<option value="">Холодная</option>
-<option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
+<option>Холодная</option>
+<option>Егор</option><option>Стас</option>
 </select>
 
 <select id="control">
-<option value="">Проверка</option>
-<option>Егор</option><option>Стас</option><option>Яков</option><option>Алекс</option><option>Денис</option>
+<option>Проверка</option>
+<option>Егор</option><option>Стас</option>
 </select>
+
 </div>
 
 <div class="card">
 <div class="label">Проблемы</div>
 <textarea id="problem"></textarea>
-<input type="file" id="photoProblem">
+<input type="file" id="photo">
 </div>
 
 <button onclick="send()">Отправить</button>
 
 </div>
 
+<!-- LOADING -->
+<div id="loading" class="hidden loader">
+<div class="spinner"></div>
+</div>
+
 <!-- DONE -->
 <div id="done" class="hidden success">
-<h1>Готово ✅</h1>
-<button onclick="location.reload()">Новый отчет</button>
+<h1>Отчет отправлен ✅</h1>
 </div>
 
 </div>
@@ -276,8 +310,7 @@ function selectUser(name){
   user=name;
   pin="";
   renderPin();
-  hideAll();
-  show("pinScreen");
+  showOnly("pinScreen");
   document.getElementById("pinTitle").innerText=name;
 }
 
@@ -295,7 +328,7 @@ const pad=document.getElementById("pinPad");
 
     renderPin();
 
-    if(pin.length===4){ login(pin); }
+    if(pin.length===4){ enter(); }
   };
 
   pad.appendChild(b);
@@ -320,32 +353,10 @@ function renderPin(){
   });
 }
 
-// LOGIN
-function login(p){
-  const saved=localStorage.getItem("pin_"+user);
-
-  if(!saved){
-    localStorage.setItem("pin_"+user,p);
-    enter();
-  } else if(saved===p){
-    enter();
-  } else {
-    document.getElementById("pinError").innerText="Неверный PIN";
-    pin="";
-    renderPin();
-  }
-}
-
+// ENTER
 function enter(){
-  hideAll();
-  show("form");
+  showOnly("form");
   document.getElementById("date").valueAsDate=new Date();
-}
-
-// LOW
-function toggleLow(){
-  const val=document.getElementById("ready").value;
-  document.getElementById("lowBlock").classList.toggle("hidden", val>=4);
 }
 
 // TAGS
@@ -354,11 +365,7 @@ function toggleTags(){
   t.style.display = t.style.display==="block" ? "none" : "block";
 }
 
-const phrases=[
-"Большая нагрузка","Нехватка персонала","Смена спокойная",
-"Были задержки","Высокий поток заказов","Ошибки",
-"Проблемы с поставками","Очереди","Все прошло отлично"
-];
+const phrases=["Большая нагрузка","Все прошло спокойно","Были задержки"];
 
 const tagsDiv=document.getElementById("tags");
 
@@ -373,8 +380,6 @@ phrases.forEach(p=>{
 
     if(el.classList.contains("active")){
       t.value+=(t.value?", ":"")+p;
-    } else {
-      t.value=t.value.replace(p,"");
     }
   };
 
@@ -383,32 +388,29 @@ phrases.forEach(p=>{
 
 // SEND
 async function send(){
-  const data={
+
+  showOnly("loading");
+
+  const data = {
     user,
-    date:document.getElementById("date").value,
-    shift:document.getElementById("shift").value,
-    ready:document.getElementById("ready").value,
-    summary:document.getElementById("summary").value
+    date: document.getElementById("date").value,
+    shift: document.getElementById("shift").value,
+    ready: document.getElementById("ready").value,
+    summary: document.getElementById("summary").value,
+    problem: document.getElementById("problem").value,
+    hot: document.getElementById("hot").value,
+    cold: document.getElementById("cold").value,
+    control: document.getElementById("control").value
   };
 
-  await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
-    method:"POST",
-    body:JSON.stringify(data)
-  });
+  try {
+    await fetch("https://script.google.com/macros/s/AKfycby6ddtcg8sgvlX_9H33b3cQM2pslzMSxCntDvxgCTXjM5ztPd3HSLYUx9KxOtOiV9Q/exec", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+  } catch (e) {
+    alert("Ошибка отправки");
+  }
 
-  hideAll();
-  show("done");
+  showOnly("done");
 }
-
-// HELPERS
-function hideAll(){
-  document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
-}
-function show(id){
-  document.getElementById(id).classList.remove("hidden");
-}
-
-</script>
-
-</body>
-</html>
